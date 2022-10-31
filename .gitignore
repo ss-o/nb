@@ -1,1 +1,4 @@
+._zi
+*.zwc
 .vagrant
+functions/_nb
