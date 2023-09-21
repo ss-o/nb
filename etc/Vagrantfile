@@ -1,5 +1,11 @@
+# frozen_string_literal: true
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
+# rubocop:disable all
+
+# NOTE: Uncomment box config block for `vagrant up` / `vagrant provision`.
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -25,6 +31,11 @@ Vagrant.configure("2") do |config|
   # Arch Boxes
 
   $arch_setup = <<-HEREDOC
+sudo su root
+
+# https://bbs.archlinux.org/viewtopic.php?id=282796
+pacman --noconfirm -Sy archlinux-keyring && pacman --noconfirm -Syu
+
 # install nvm (https://github.com/nvm-sh/nvm)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
 
@@ -39,10 +50,11 @@ sudo pacman       \
   -Syu            \
   bash-bats       \
   elinks          \
+  fish            \
   git             \
   lynx            \
   nmap            \
-  pandoc          \
+  pandoc-cli      \
   python-pygments \
   vim             \
   w3m
@@ -53,9 +65,9 @@ HEREDOC
   #
   # https://app.vagrantup.com/archlinux/boxes/archlinux
 
-  # config.vm.define "arch" do |centos7|
-  #   centos7.vm.box = "archlinux/archlinux"
-  #   centos7.vm.provision :shell, inline: $arch_setup, privileged: false
+  # config.vm.define "arch" do |arch|
+  #   arch.vm.box = "archlinux/archlinux"
+  #   arch.vm.provision :shell, inline: $arch_setup, privileged: false
   # end
 
   #############################################################################
@@ -90,6 +102,16 @@ HEREDOC
   # end
 
   #############################################################################
+  # EndeavorOS Boxes
+
+  # NOTE: uses $arch_setup
+
+  # config.vm.define "endeavor" do |endeavor|
+  #   endeavor.vm.box = "altafsaljooq/EndeavousOS"
+  #   endeavor.vm.provision :shell, inline: $arch_setup, privileged: false
+  # end
+
+  #############################################################################
   # Fedora Boxes
 
   $fedora_setup = <<-HEREDOC
@@ -116,8 +138,19 @@ fi
 HEREDOC
 
   ###########
+  # Fedora 38
+
+  # https://app.vagrantup.com/fedora/boxes/38-cloud-base
+  # config.vm.define "fedora38" do |fedora38|
+  #   fedora38.vm.box         = "fedora/38-cloud-base"
+  #   fedora38.vm.box_version = "38.20230413.1"
+  #   fedora38.vm.provision :shell, inline: $fedora_setup, privileged: false
+  # end
+
+  ###########
   # Fedora 36
 
+  # https://app.vagrantup.com/fedora/boxes/36-cloud-base
   # config.vm.define "fedora36" do |fedora36|
   #   fedora36.vm.box         = "fedora/36-cloud-base"
   #   fedora36.vm.box_version = "36-20220504.1"
@@ -157,6 +190,16 @@ then
   printf "\\nexport PATH=\"/vagrant:\${PATH}\"\\n" >> "${HOME}/.bashrc"
 fi
 HEREDOC
+
+  #############
+  # NixOS 23.05
+
+  # https://license.hashicorp.com/boxen/boxes/nixos-23.05-x86_64
+  # config.vm.define "nixos2305" do |nixos2305|
+  #   nixos2305.vm.box         = "boxen/nixos-23.05-x86_64"
+  #   nixos2305.vm.box_version = "2023.8.14.0"
+  #   nixos2305.vm.provision :shell, inline: $nixos_setup, privileged: false
+  # end
 
   #############
   # NixOS 20.03

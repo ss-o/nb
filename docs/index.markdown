@@ -214,7 +214,7 @@ Also supported for various enhancements:
 [The Silver Searcher (`ag`)](https://github.com/ggreer/the_silver_searcher),
 [`catimg`](https://github.com/posva/catimg),
 [Chafa](https://github.com/hpjansson/chafa),
-[`exa`](https://github.com/ogham/exa),
+[`eza`](https://github.com/eza-community/eza),
 [`ffplay`](https://ffmpeg.org/ffplay.html),
 [ImageMagick](https://imagemagick.org/),
 [GnuPG](https://en.wikipedia.org/wiki/GNU_Privacy_Guard),
@@ -222,6 +222,7 @@ Also supported for various enhancements:
 [`imgcat`](https://www.iterm2.com/documentation-images.html),
 [`joshuto`](https://github.com/kamiyaa/joshuto),
 [kitty's `icat` kitten](https://sw.kovidgoyal.net/kitty/kittens/icat.html),
+[`lsd`](https://github.com/lsd-rs/lsd),
 [Links](https://en.wikipedia.org/wiki/Links_(web_browser)),
 [Lynx](https://en.wikipedia.org/wiki/Lynx_(web_browser)),
 [Midnight Commander (`mc`)](https://en.wikipedia.org/wiki/Midnight_Commander),
@@ -236,7 +237,7 @@ Also supported for various enhancements:
 [readability-cli](https://gitlab.com/gardenappl/readability-cli),
 [`rga` / ripgrep-all](https://github.com/phiresky/ripgrep-all),
 [`sc-im`](https://github.com/andmarti1424/sc-im),
-[`term-image`](https://github.com/AnonymouX47/term-image),
+[`termvisage`](https://github.com/AnonymouX47/termvisage),
 [`termpdf.py`](https://github.com/dsanson/termpdf.py),
 [Tidy-Viewer (`tv`)](https://github.com/alexhallam/tv),
 [`timg`](https://github.com/hzeller/timg),
@@ -1452,12 +1453,13 @@ Supported file types and tools include:
   - [`imgcat`](https://www.iterm2.com/documentation-images.html) with
     [iTerm2](https://www.iterm2.com/)
   - [kitty's `icat` kitten](https://sw.kovidgoyal.net/kitty/kittens/icat.html)
-  - [`term-image`](https://github.com/AnonymouX47/term-image)
+  - [`termvisage`](https://github.com/AnonymouX47/termvisage)
   - [`timg`](https://github.com/hzeller/timg)
   - [`viu`](https://github.com/atanunq/viu)
 - Folders, Directories, Notebooks ([`$NB_DIRECTORY_TOOL`](#nb_directory_tool)):
-  - [`exa`](https://github.com/ogham/exa)
+  - [`eza`](https://github.com/eza-community/eza)
   - [`joshuto`](https://github.com/kamiyaa/joshuto)
+  - [`lsd`](https://github.com/lsd-rs/lsd)
   - [Midnight Commander (`mc`)](https://en.wikipedia.org/wiki/Midnight_Commander)
   - [`ranger`](https://ranger.github.io/)
   - [`vifm`](https://vifm.info/)
@@ -3449,7 +3451,7 @@ supported tools and configurations, including:
 - [`imgcat`](https://www.iterm2.com/documentation-images.html) with
   [iTerm2](https://www.iterm2.com/)
 - [kitty's `icat` kitten](https://sw.kovidgoyal.net/kitty/kittens/icat.html)
-- [`term-image`](https://github.com/AnonymouX47/term-image)
+- [`termvisage`](https://github.com/AnonymouX47/termvisage)
 - [`timg`](https://github.com/hzeller/timg)
 - [`viu`](https://github.com/atanunq/viu)
 
@@ -3763,7 +3765,7 @@ To bump an item to the top of the list without pinning, use the
 
 Use [`nb search`](#search) (shortcut: [`nb q`](#search)) to
 perform full text searches, with support for regular expressions,
-[#tags](#-tagging), and both `AND` and `OR` queries:
+[#tags](#-tagging), and `AND`, `OR`, and `NOT` queries:
 
 ```bash
 # search current notebook for "example query"
@@ -3789,6 +3791,9 @@ nb search "example|sample"
 
 # search for "example" OR "sample" with option
 nb search "example" --or "sample"
+
+# search for items matching both "Example" AND "Sample", and NOT "Demo"
+nb search "Example" --and "Sample" --not "Demo"
 
 # search items containing the hashtag "#example"
 nb search "#example"
@@ -3875,6 +3880,18 @@ nb q "example" --or "sample"
 ```bash
 nb q "example" --or "sample" --and "demo"
 # equivalent: example|sample AND demo|sample
+```
+
+`NOT` queries exclude items that match the specified query and are
+specified with [`--not <query>`](#search), which can be used with
+`--and` and `--or`:
+
+```bash
+# search for items that match "Example", excluding items that also match "Sample"
+nb search "Example" --not "Sample"
+
+# search for items matching both "Example" AND "Sample", and NOT "Demo"
+nb search "Example" --and "Sample" --not "Demo"
 ```
 
 Search for [#tags](#-tagging) with flexible
@@ -5970,7 +5987,7 @@ Usage:
   nb remote set <url> [<branch-name>]
   nb run <command> [<arguments>...]
   nb search ([<notebook>:][<folder-path>/][<id> | <filename> | <title>])
-            <query>... [-a | --all] [--and <query>] [--or <query>]
+            <query>... [-a | --all] [--and <query>] [--not <query>] [--or <query>]
             [-l | --list] [--path] [-t <tag1>,<tag2>... | --tag <tag1>,<tag2>...]
             [-t | --tags] [--type <type> | --<type>] [--utility <name>]
   nb set [<name> [<value>] | <number> [<value>]]
@@ -7447,7 +7464,8 @@ Subcommands:
              Shortcut Alias: `o`
   peek       Open the current notebook directory or notebook <name> in the
              first tool found in the following list:
-             `ranger` [1], `mc` [2], `vifm` [3], `joshuto` [4], `exa` [5], or `ls`.
+             `ranger` [1], `mc` [2], `vifm` [3], `joshuto` [4], `lsd` [5],
+             `eza` [6], or `ls`.
              Shortcut Alias: `p`
   rename     Rename a notebook. Aliases: `move`, `mv`
   select     Set the current notebook from a colon-prefixed selector.
@@ -7462,7 +7480,8 @@ Subcommands:
     2. https://en.wikipedia.org/wiki/Midnight_Commander
     3. https://vifm.info/
     4. https://github.com/kamiyaa/joshuto
-    5. https://github.com/ogham/exa
+    5. https://github.com/lsd-rs/lsd
+    6. https://github.com/eza-community/eza
 
 Description:
   Manage notebooks.
@@ -7556,13 +7575,14 @@ Description:
   format or any other file type, `peek` is the equivalent of `show`. When
   used with a notebook, `peek` opens the notebook folder first tool found in
   the following list: `ranger` [1], `mc` [2], `vifm` [3], `joshuto` [4],
-  `exa` [5], or `ls`.
+  `lsd` [5], eza` [6], or `ls`.
 
     1. https://ranger.github.io/
     2. https://en.wikipedia.org/wiki/Midnight_Commander
     3. https://vifm.info/
     4. https://github.com/kamiyaa/joshuto
-    5. https://github.com/ogham/exa
+    5. https://github.com/lsd-rs/lsd
+    6. https://github.com/eza-community/eza
 
 Read More:
   https://github.com/xwmx/nb#viewing-bookmarks
@@ -7743,7 +7763,7 @@ Examples:
 ```text
 Usage:
   nb search ([<notebook>:][<folder-path>/][<id> | <filename> | <title>])
-            <query>... [-a | --all] [--and <query>] [--or <query>]
+            <query>... [-a | --all] [--and <query>] [--not <query>] [--or <query>]
             [-l | --list] [--path] [-t <tag1>,<tag2>... | --tag <tag1>,<tag2>...]
             [-t | --tags] [--type <type> | --<type>] [--utility <name>]
 
@@ -7752,7 +7772,8 @@ Options:
   --and <query>                 Add a AND query.
   -l, --list                    Print the id, filename, and title listing for
                                 each matching file, without the excerpt.
-  --or <query>                  Add an OR query.
+  --not <query>                 Add a NOT query.
+  --or  <query>                 Add an OR query.
   --path                        Print the full path for each matching file.
   -t, --tag <tag1>,<tag2>...    A comma-separated list of tags.
   -t, --tags                    List all tags found in the notebook.
@@ -7768,7 +7789,8 @@ Description:
   Multiple query arguments are treated as AND queries, returning items that
   match all queries. AND queries can also be specified with the --and <query>
   option. The --or <query> option can be used to specify an OR query,
-  returning items that match at least one of the queries.
+  returning items that match at least one of the queries. --not <query>
+  excludes items matching <query>.
 
   `nb search` is powered by Git's built-in `git grep` tool. `nb` also
   supports performing searches with alternative search tools using the
@@ -7806,6 +7828,9 @@ Examples:
   # search for items matching "Example" OR "Sample"
   nb search "Example|Sample"
   nb search "Example" --or "Sample"
+
+  # search for items matching both "Example" AND "Sample", and NOT "Demo"
+  nb search "Example" --and "Sample" --not "Demo"
 
   # search with a regular expression
   nb search "\d\d\d-\d\d\d\d"
